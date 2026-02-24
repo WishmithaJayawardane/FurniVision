@@ -63,7 +63,7 @@ export function DashboardNav() {
   return (
     <>
       <SidebarHeader className="p-4">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href="/" className="flex items-center gap-2">
           <Logo className="w-12 h-12 text-primary" />
           <span className="text-xl font-semibold">FurniVision</span>
         </Link>
@@ -77,7 +77,7 @@ export function DashboardNav() {
         </Button>
         <SidebarMenu className="mt-4">
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname === '/dashboard'}>
+            <SidebarMenuButton asChild>
               <Link href="/dashboard">
                 <Home />
                 <span>Home</span>
