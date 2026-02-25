@@ -14,6 +14,7 @@ export type Room = {
   depth: number; // in feet
   height: number; // in feet
   color: string; // hex code
+  shape: 'rectangular' | 'l-shaped';
 };
 
 export type FurnitureType = 'Sofa' | 'Dining Table' | 'Armchair' | 'Side Table' | 'Bed' | 'Rug' | 'Lamp';
