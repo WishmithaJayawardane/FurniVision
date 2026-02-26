@@ -29,7 +29,7 @@ export default function DesignPage() {
       id: `des_${new Date().getTime()}`,
       name: 'Untitled Design',
       designerId: user.uid,
-      room: { width: 12, depth: 12, height: 9, color: '#f0f8ff' },
+      room: { width: 12, depth: 12, height: 9, color: '#f0f8ff', shape: 'rectangular' },
       furniture: [],
       lastModified: new Date().toISOString(),
       imageUrl: newDesignImage.imageUrl,
