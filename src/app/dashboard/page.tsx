@@ -82,7 +82,7 @@ export default function DashboardPage() {
           {designs.map((design) => (
             <Card key={design.id} className="flex flex-col">
               <CardHeader>
-                <div className="relative aspect-[3/2] w-full rounded-t-lg overflow-hidden">
+                <Link href={`/dashboard/design/${design.id}`} className="block relative aspect-[3/2] w-full rounded-t-lg overflow-hidden hover:opacity-90 transition-opacity cursor-pointer">
                   <Image
                     src={design.imageUrl}
                     alt={design.name}
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                     className="object-cover"
                     data-ai-hint={design.imageHint}
                   />
-                </div>
+                </Link>
               </CardHeader>
               <CardContent className="flex-grow">
                 <CardTitle className="mb-2">{design.name}</CardTitle>
