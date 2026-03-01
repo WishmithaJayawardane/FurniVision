@@ -1,0 +1,216 @@
+{
+  "entities": {
+    "Designer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Designer",
+      "type": "object",
+      "description": "Represents a designer who uses the FurniVision application to create and manage furniture designs for clients.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Designer entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the designer."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the designer."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the designer, used for contact and potentially login (authentication handled by an external system).",
+          "format": "email"
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date and time when the designer's account was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "registrationDate"
+      ]
+    },
+    "FurnitureItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FurnitureItem",
+      "type": "object",
+      "description": "Represents a catalog item of furniture that can be selected and placed in a room design.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the FurnitureItem entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The common name of the furniture item (e.g., 'Eames Lounge Chair', 'Modern Dining Table')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the furniture item, including its style, materials, and features."
+        },
+        "category": {
+          "type": "string",
+          "description": "The category the furniture item belongs to (e.g., 'Chairs', 'Tables', 'Sofas', 'Storage')."
+        },
+        "manufacturer": {
+          "type": "string",
+          "description": "The manufacturer or brand of the furniture item."
+        },
+        "defaultWidthCm": {
+          "type": "number",
+          "description": "The default width of the furniture item in centimeters."
+        },
+        "defaultHeightCm": {
+          "type": "number",
+          "description": "The default height of the furniture item in centimeters."
+        },
+        "defaultDepthCm": {
+          "type": "number",
+          "description": "The default depth of the furniture item in centimeters."
+        },
+        "baseColor": {
+          "type": "string",
+          "description": "The default color of the furniture item, typically a hex code or common color name."
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "A URL to a thumbnail image of the furniture item for catalog display.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "category",
+        "defaultWidthCm",
+        "defaultHeightCm",
+        "defaultDepthCm",
+        "baseColor",
+        "thumbnailUrl"
+      ]
+    },
+    "Design": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Design",
+      "type": "object",
+      "description": "Represents a specific furniture arrangement and visualization created by a designer for a particular room context.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "designerId": {
+          "type": "string"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "imageHint": {
+          "type": "string"
+        },
+        "room": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "number"
+            },
+            "depth": {
+              "type": "number"
+            },
+            "height": {
+              "type": "number"
+            },
+            "color": {
+              "type": "string"
+            }
+          },
+          "required": ["width", "depth", "height", "color"]
+        },
+        "furniture": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "width": { "type": "number" },
+              "depth": { "type": "number" },
+              "height": { "type": "number" },
+              "x": { "type": "number" },
+              "y": { "type": "number" },
+              "rotation": { "type": "number" },
+              "color": { "type": "string" },
+              "material": { "type": "string" },
+              "style": { "type": "string" },
+              "imageUrl": { "type": "string" },
+              "imageHint": { "type": "string" }
+            },
+            "required": ["id", "name", "type", "width", "depth", "height", "x", "y", "rotation", "color"]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "designerId",
+        "lastModified"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/designers/{designerId}",
+        "definition": {
+          "entityName": "Designer",
+          "schema": {
+            "$ref": "#/backend/entities/Designer"
+          },
+          "description": "Stores individual designer profiles. Each document represents a designer and is owned by the Firebase authenticated user with the matching UID. Authorization is based on 'request.auth.uid == designerId'."
+        }
+      },
+      {
+        "path": "/furnitureCatalog/{furnitureItemId}",
+        "definition": {
+          "entityName": "FurnitureItem",
+          "schema": {
+            "$ref": "#/backend/entities/FurnitureItem"
+          },
+          "description": "Stores a global catalog of available furniture items. This collection is read-only for all authenticated designers, serving as public product data."
+        }
+      },
+      {
+        "path": "/designers/{designerId}/designs/{designId}",
+        "definition": {
+          "entityName": "Design",
+          "schema": {
+            "$ref": "#/backend/entities/Design"
+          },
+          "description": "Stores furniture designs created and owned by a specific designer. The 'designerId' field within the document, along with path-based ownership, ensures authorization independence."
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure for FurniVision is simplified to prioritize rapid development and align with the existing UI components. It uses a denormalized approach for designs, embedding room and furniture data directly within each design document. This avoids complex client-side joins and simplifies data management for the MVP.\n\n- **Authorization:** A path-based ownership model is maintained for all designer-specific data. All designer-created documents are stored under `/designers/{designerId}`, allowing security rules to enforce ownership by checking `request.auth.uid == designerId`.\n- **Data Model:** The `Design` entity contains all necessary information for rendering a single design, including `room` specifications and an array of `furniture` placements. This denormalization simplifies fetching data for the design editor, requiring only a single document read. A separate `furnitureCatalog` collection remains for globally accessible furniture types, which is read-only for clients."
+  }
+}

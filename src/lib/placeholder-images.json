@@ -1,0 +1,70 @@
+{
+  "placeholderImages": [
+    {
+      "id": "design-1",
+      "description": "A bright, modern living room with a blue sofa and wooden accents.",
+      "imageUrl": "https://images.unsplash.com/photo-1564078516393-cf04bd966897?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsaXZpbmclMjByb29tfGVufDB8fHx8MTc3MDg1NjEzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "living room"
+    },
+    {
+      "id": "design-2",
+      "description": "A minimalist dining room with a large wooden table and six chairs.",
+      "imageUrl": "https://images.unsplash.com/photo-1617098709804-705581f844eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkaW5pbmclMjByb29tfGVufDB8fHx8MTc3MDg3MTk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dining room"
+    },
+    {
+      "id": "design-3",
+      "description": "A cozy bedroom with a queen-sized bed and soft lighting.",
+      "imageUrl": "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxiZWRyb29tfGVufDB8fHx8MTc3MDg2NTA1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bedroom"
+    },
+    {
+      "id": "new-design",
+      "description": "An empty room with light-colored walls, waiting for a new design.",
+      "imageUrl": "https://images.unsplash.com/photo-1630699375895-fe5996d163ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxlbXB0eSUyMHJvb218ZW58MHx8fHwxNzcwODQxMTgwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "empty room"
+    },
+    {
+      "id": "furniture-sofa",
+      "description": "A modern three-seater sofa.",
+      "imageUrl": "https://images.unsplash.com/photo-1512212621149-107ffe572d2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzb2ZhfGVufDB8fHx8MTc3MDgwMjc1MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sofa"
+    },
+    {
+      "id": "furniture-armchair",
+      "description": "A comfortable armchair.",
+      "imageUrl": "https://images.unsplash.com/photo-1617364852223-75f57e78dc96?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YXJtY2hhaXJ8ZW58MHx8fHwxNzcwODcxOTcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "armchair"
+    },
+    {
+      "id": "furniture-dining-table",
+      "description": "A rectangular dining table.",
+      "imageUrl": "https://images.unsplash.com/photo-1614597445336-8a67e9314d91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkaW5pbmclMjB0YWJsZXxlbnwwfHx8fDE3NzA4NzE5NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dining table"
+    },
+    {
+      "id": "furniture-side-table",
+      "description": "A small side table.",
+      "imageUrl": "https://images.unsplash.com/photo-1532372320572-cda25653a26d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzaWRlJTIwdGFibGV8ZW58MHx8fHwxNzcwODcxOTcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "side table"
+    },
+    {
+      "id": "furniture-bed",
+      "description": "A queen size bed.",
+      "imageUrl": "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YmVkfGVufDB8fHx8MTc3MDg3MTk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bed"
+    },
+    {
+      "id": "furniture-rug",
+      "description": "An area rug.",
+      "imageUrl": "https://images.unsplash.com/photo-1660394585016-508f949df960?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxydWd8ZW58MHx8fHwxNzcwODcxOTcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rug"
+    },
+    {
+      "id": "furniture-lamp",
+      "description": "A floor lamp.",
+      "imageUrl": "https://images.unsplash.com/photo-1621177555630-b861919c864f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsYW1wfGVufDB8fHx8MTc3MDg3MTk3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lamp"
+    }
+  ]
+}

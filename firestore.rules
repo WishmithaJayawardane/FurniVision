@@ -1,0 +1,50 @@
+/**
+ * This ruleset enforces a user-ownership model for a furniture design application.
+ * Designer-generated content is stored under a path containing their user ID,
+ * ensuring they can only access their own data. A global furniture catalog is
+ * readable by any authenticated user.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * Helper function to check if a user is signed in.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Helper function to verify document ownership based on UID.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Rules for the designers collection.
+     * Each designer has a document that can only be read or written by them.
+     */
+    match /designers/{designerId} {
+      allow read, write: if isOwner(designerId);
+
+      /**
+       * Rules for the designs subcollection.
+       * Designs can be created, read, updated, and deleted only by their owner.
+       */
+      match /designs/{designId} {
+        allow read, write: if isOwner(designerId);
+      }
+    }
+    
+    /**
+     * Rules for the global furniture catalog.
+     * This data is public to all authenticated users but cannot be modified by them.
+     */
+    match /furnitureCatalog/{furnitureItemId} {
+      allow get, list: if isSignedIn();
+      allow write: if false;
+    }
+  }
+}
