@@ -4,6 +4,7 @@ import { DesignEditor } from "@/components/design-editor";
 import { useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useParams } from "next/navigation";
+import { useState, useEffect } from 'react';
 import type { Design } from '@/lib/types';
 import { Loader2, Info } from 'lucide-react';
 import { findImageById } from '@/lib/placeholder-images';
@@ -37,7 +38,20 @@ export default function DesignPage() {
     return <DesignEditor initialDesign={newDesign} />;
   }
 
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isLoading) {
+      timer = setTimeout(() => setShowLoader(true), 250);
+    } else {
+      setShowLoader(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
   if (isLoading) {
+    if (!showLoader) return null;
     return (
       <div className="flex h-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
