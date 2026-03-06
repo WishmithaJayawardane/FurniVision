@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import type { Design, Furniture, Room } from '@/lib/types';
@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getAvailableFurniture, getFurnitureIcon } from '@/lib/data';
 import { Save, Trash2, Copy, Undo, Redo, Loader2, Wand2, Box, Sofa, Table2, Armchair, RectangleHorizontal, BedDouble, LampFloor } from 'lucide-react';
 import { AiColorSuggester } from './ai-color-suggester';
@@ -80,6 +81,74 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isArranging, setIsArranging] = useState(false);
   const [is3dViewOpen, setIs3dViewOpen] = useState(false);
+
+  // Drag-and-drop state
+  const dragRef = useRef<{ id: string; startX: number; startY: number; origX: number; origY: number } | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent, item: Furniture) => {
+    e.stopPropagation();
+    e.preventDefault();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    setSelectedFurnitureId(item.id);
+    dragRef.current = { id: item.id, startX: e.clientX, startY: e.clientY, origX: item.x, origY: item.y };
+  }, []);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    const dx = (e.clientX - dragRef.current.startX) / PIXELS_PER_FOOT * 12;
+    const dy = (e.clientY - dragRef.current.startY) / PIXELS_PER_FOOT * 12;
+    const newX = Math.round(dragRef.current.origX + dx);
+    const newY = Math.round(dragRef.current.origY + dy);
+    handleFurnitureChange(dragRef.current.id, { x: newX, y: newY });
+  }, []);
+
+  const handlePointerUp = useCallback(() => {
+    dragRef.current = null;
+  }, []);
+
+  // Scale to Fit: proportionally scale all furniture to fit within the room
+  const handleScaleToFit = useCallback(() => {
+    if (!design.furniture.length) return;
+    const roomWidthIn = design.room.width * 12;
+    const roomDepthIn = design.room.depth * 12;
+    let maxRight = 0, maxBottom = 0;
+    design.furniture.forEach(f => {
+      maxRight = Math.max(maxRight, f.x + f.width);
+      maxBottom = Math.max(maxBottom, f.y + f.depth);
+    });
+    if (maxRight <= roomWidthIn && maxBottom <= roomDepthIn) return;
+    const scaleFactor = Math.min(roomWidthIn / maxRight, roomDepthIn / maxBottom) * 0.9;
+    setDesign(prev => ({
+      ...prev,
+      furniture: prev.furniture.map(f => ({
+        ...f,
+        width: Math.round(f.width * scaleFactor),
+        depth: Math.round(f.depth * scaleFactor),
+        height: Math.round(f.height * scaleFactor),
+        x: Math.round(f.x * scaleFactor),
+        y: Math.round(f.y * scaleFactor),
+      }))
+    }));
+    toast({ title: 'Scaled to Fit', description: 'All furniture has been proportionally resized.' });
+  }, [design, setDesign, toast]);
+
+  // Toggle shadow on all items
+  const handleToggleShadowAll = useCallback((checked: boolean) => {
+    setDesign(prev => ({
+      ...prev,
+      furniture: prev.furniture.map(f => ({ ...f, hasShadow: checked }))
+    }));
+  }, [setDesign]);
+
+  // Apply Room Color to All Items
+  const handleApplyColorToAll = useCallback(() => {
+    setDesign(prev => ({
+      ...prev,
+      furniture: prev.furniture.map(f => ({ ...f, color: prev.room.color }))
+    }));
+    toast({ title: 'Color Applied', description: 'Room color has been applied to all furniture.' });
+  }, [setDesign, toast]);
 
   const availableFurniture = getAvailableFurniture();
 
@@ -317,9 +386,19 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
         </Dialog>
         <div className="flex-1 p-4 overflow-auto bg-gray-100 flex items-center justify-center">
           <div
+            ref={canvasRef}
             className="relative bg-white shadow-inner"
-            style={{ width: roomDimensions.width, height: roomDimensions.height, backgroundColor: design.room.color }}
+            style={{
+              width: roomDimensions.width,
+              height: roomDimensions.height,
+              backgroundColor: design.room.color,
+              clipPath: (design.room.shape ?? 'rectangular') === 'l-shaped'
+                ? 'polygon(0% 0%, 60% 0%, 60% 50%, 100% 50%, 100% 100%, 0% 100%)'
+                : undefined,
+            }}
             onClick={() => setSelectedFurnitureId(null)}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
           >
             {design.furniture.map(item => {
               const itemWidth = item.width / 12 * PIXELS_PER_FOOT;
@@ -331,7 +410,7 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
                 <div
                   key={item.id}
                   className={cn(
-                    'absolute flex flex-col items-center justify-center p-1 box-border border-2 cursor-pointer transition-all group',
+                    'absolute flex flex-col items-center justify-center p-1 box-border border-2 cursor-grab active:cursor-grabbing transition-shadow group',
                     selectedFurnitureId === item.id ? 'border-primary' : 'border-transparent',
                     item.hasShadow && 'drop-shadow-lg'
                   )}
@@ -343,7 +422,7 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
                     backgroundColor: item.color,
                     zIndex: item.type === 'Rug' ? 0 : 1,
                   }}
-                  onClick={(e) => { e.stopPropagation(); setSelectedFurnitureId(item.id); }}
+                  onPointerDown={(e) => handlePointerDown(e, item)}
                 >
                   <Icon className="w-2/3 h-2/3 text-white/60 pointer-events-none" style={{ filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.5))' }} />
                   <p className="text-xs text-center p-1 truncate text-white bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-0 w-full pointer-events-none">{item.name}</p>
@@ -440,6 +519,16 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
               <div className="space-y-4">
                 <h3 className="font-semibold">Room Settings</h3>
                 <Separator />
+                <div>
+                  <Label htmlFor="room-shape">Room Shape</Label>
+                  <Select value={design.room.shape ?? 'rectangular'} onValueChange={(val: 'rectangular' | 'l-shaped') => handleRoomChange({ shape: val })}>
+                    <SelectTrigger id="room-shape"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rectangular">Rectangular</SelectItem>
+                      <SelectItem value="l-shaped">L-Shaped</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="room-width">Width (ft)</Label>
@@ -460,11 +549,22 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
                     <Input id="room-color" value={design.room.color} onChange={e => handleRoomChange({ color: e.target.value })} className="flex-1" />
                     <Input type="color" value={design.room.color} onChange={e => handleRoomChange({ color: e.target.value })} className="p-0 h-10 w-10" />
                   </div>
+                  <Button variant="outline" size="sm" onClick={handleApplyColorToAll} className="w-full mt-2">
+                    Apply Color to All Items
+                  </Button>
                 </div>
-                <div className="pt-4">
+                <Separator />
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="shadow-all">Shadow on All Items</Label>
+                  <Switch id="shadow-all" checked={design.furniture.every(f => f.hasShadow)} onCheckedChange={handleToggleShadowAll} />
+                </div>
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <Button onClick={handleScaleToFit} variant="outline" disabled={!design.furniture.length} className="w-full">
+                    Scale to Fit
+                  </Button>
                   <Button onClick={handleAutoArrange} disabled={isArranging || !design.furniture.length} className="w-full">
                     {isArranging ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    {isArranging ? 'Arranging...' : 'Auto-Arrange All Furniture'}
+                    {isArranging ? 'Arranging...' : 'Arrange'}
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground pt-4">Select a furniture item to edit its properties.</p>
