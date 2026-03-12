@@ -214,6 +214,25 @@ export function IsometricView({ design }: { design: Design }) {
             const itemX = item.x / 12 * PIXELS_PER_FOOT;
             const itemY = item.y / 12 * PIXELS_PER_FOOT;
 
+            // If shadow is enabled, create a dark ground shadow face offset from the item
+            if (item.hasShadow) {
+                const shadowOffset = 3;
+                const shadowPoints = [
+                    { x: itemX + shadowOffset, y: itemY + shadowOffset, z: 0.05 },
+                    { x: itemX + itemWidth + shadowOffset, y: itemY + shadowOffset, z: 0.05 },
+                    { x: itemX + itemWidth + shadowOffset, y: itemY + itemDepth + shadowOffset, z: 0.05 },
+                    { x: itemX + shadowOffset, y: itemY + itemDepth + shadowOffset, z: 0.05 },
+                ].map(transform);
+                const avgDepth = shadowPoints.reduce((s, p) => s + p.depth, 0) / 4;
+                allFaces.push({
+                    points3d: shadowPoints,
+                    color: 'rgba(0, 0, 0, 0.25)',
+                    border: 'rgba(0, 0, 0, 0)',
+                    ownerName: null,
+                    depthZ: avgDepth - 0.01, // Just above floor
+                });
+            }
+
             allFaces.push(...generateBoxFaces(itemX, itemY, 0, itemWidth, itemDepth, itemHeight, item.color, item.name));
         });
 
