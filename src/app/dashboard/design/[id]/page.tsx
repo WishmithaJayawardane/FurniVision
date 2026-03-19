@@ -22,6 +22,22 @@ export default function DesignPage() {
 
   const { data: design, isLoading } = useDoc<Design>(designDocRef);
 
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (isLoading) {
+      timer = setTimeout(() => setShowLoader(true), 250);
+    } else {
+      setShowLoader(false);
+    }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [isLoading]);
+
   if (id === 'new') {
     if (!user) return null; // Or a loading/error state
     const newDesignImage = findImageById('new-design');
@@ -37,18 +53,6 @@ export default function DesignPage() {
     };
     return <DesignEditor initialDesign={newDesign} />;
   }
-
-  const [showLoader, setShowLoader] = useState(false);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (isLoading) {
-      timer = setTimeout(() => setShowLoader(true), 250);
-    } else {
-      setShowLoader(false);
-    }
-    return () => clearTimeout(timer);
-  }, [isLoading]);
 
   if (isLoading) {
     if (!showLoader) return null;

@@ -56,7 +56,7 @@ export default function SupportPage() {
                 <CardHeader>
                     <CardTitle>Contact Us</CardTitle>
                     <CardDescription>
-                        Send us a message directly and we'll reply to your email.
+                        Send us a message directly and we&apos;ll reply to your email.
                     </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>

@@ -127,7 +127,7 @@ export function AiColorSuggester({ room, furniture, onApplyScheme }: AiColorSugg
                                 ) : (
                                     <>
                                         <Palette className="h-12 w-12 mb-4" />
-                                        <p>Click "Generate" to get started.</p>
+                                        <p>Click &quot;Generate&quot; to get started.</p>
                                     </>
                                 )}
                             </div>

@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.swc/
 /out/
 
 # production
@@ -23,6 +24,8 @@
 # misc
 .DS_Store
 *.pem
+.idx/
+.modified
 
 # debug
 npm-debug.log*

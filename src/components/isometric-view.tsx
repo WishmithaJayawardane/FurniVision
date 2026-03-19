@@ -42,12 +42,12 @@ type Face = {
 
 // Standard point-in-polygon algorithm (ray-casting)
 function isPointInPolygon(point: Point2D, vs: Point2D[]) {
-    let x = point.x, y = point.y;
+    const x = point.x, y = point.y;
     let inside = false;
     for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-        let xi = vs[i].x, yi = vs[i].y;
-        let xj = vs[j].x, yj = vs[j].y;
-        let intersect = ((yi > y) !== (yj > y))
+        const xi = vs[i].x, yi = vs[i].y;
+        const xj = vs[j].x, yj = vs[j].y;
+        const intersect = ((yi > y) !== (yj > y))
             && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
         if (intersect) inside = !inside;
     }
@@ -139,17 +139,17 @@ export function IsometricView({ design }: { design: Design }) {
         const cosP = Math.cos(pitchRad), sinP = Math.sin(pitchRad);
 
         const transform = (p: Vec3): TransformedPoint => {
-            let x = p.x - cx;
-            let y = p.y - cy;
-            let z = p.z - cz;
+            const x = p.x - cx;
+            const y = p.y - cy;
+            const z = p.z - cz;
 
-            let x1 = x * cosY - y * sinY;
-            let y1 = x * sinY + y * cosY;
-            let z1 = z;
+            const x1 = x * cosY - y * sinY;
+            const y1 = x * sinY + y * cosY;
+            const z1 = z;
 
-            let sx = x1;
-            let depth = y1 * cosP - z1 * sinP;
-            let sy = y1 * sinP + z1 * cosP;
+            const sx = x1;
+            const depth = y1 * cosP - z1 * sinP;
+            const sy = y1 * sinP + z1 * cosP;
 
             return { sx, sy, depth };
         };
