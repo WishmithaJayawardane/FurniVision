@@ -17,13 +17,37 @@ npm.cmd install
 ```
 *(This may take a minute as it rebuilds the `node_modules` folder.)*
 
-### Step 2: Start the Development Server
+### Step 2: Set Up Environment Variables for AI Features
+This project includes Genkit-powered AI features such as:
+- `Arrange All`
+- `Suggest Colors`
+
+These features require a Google AI API key. This key is **not stored in the repository** and must be created locally after cloning.
+
+Create a file named `.env.local` in the project root and add **one** of the following:
+
+```env
+GEMINI_API_KEY=your_google_ai_api_key_here
+```
+
+or
+
+```env
+GOOGLE_API_KEY=your_google_ai_api_key_here
+```
+
+Important notes:
+- You can use the included `.env.example` file as a template.
+- If this step is skipped, the main app will still open, but AI features like `Arrange All` and `Suggest Colors` will fail.
+- Because `.env.local` contains a private key, it is ignored by Git and should never be uploaded to GitHub.
+
+### Step 3: Start the Development Server
 Once the installation is complete, start the local Next.js development server by running:
 ```bash
 npm.cmd run dev
 ```
 
-### Step 3: Open the Application
+### Step 4: Open the Application
 Open your web browser and navigate to:
 ```text
 http://localhost:9002
@@ -58,3 +82,11 @@ To build the application for deployment or production testing, run:
 ```bash
 npm run build
 ```
+
+### Fresh Clone Checklist
+For a completely fresh setup from GitHub, make sure all of the following are done:
+- Run `npm.cmd install`
+- Create `.env.local`
+- Add `GEMINI_API_KEY` or `GOOGLE_API_KEY`
+- Run `npm.cmd run dev`
+- Open `http://localhost:9002`
