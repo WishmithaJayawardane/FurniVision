@@ -41,32 +41,38 @@ import { Badge } from '@/components/ui/badge';
 const PIXELS_PER_FOOT = 20;
 
 const useDesignHistory = (initialState: Design) => {
-  const [history, setHistory] = useState([initialState]);
-  const [index, setIndex] = useState(0);
+  const [state, setState] = useState({
+    history: [initialState],
+    index: 0
+  });
 
-  const setState = useCallback((action: React.SetStateAction<Design>) => {
-    const currentState = history[index];
-    const newState = typeof action === 'function' ? (action as (prevState: Design) => Design)(currentState) : action;
+  const setDesign = useCallback((action: React.SetStateAction<Design>) => {
+    setState(prev => {
+      const currentState = prev.history[prev.index];
+      const newState = typeof action === 'function' ? (action as (prevState: Design) => Design)(currentState) : action;
 
-    if (JSON.stringify(currentState) === JSON.stringify(newState)) {
-      return;
-    }
+      if (JSON.stringify(currentState) === JSON.stringify(newState)) {
+        return prev;
+      }
 
-    const newHistory = history.slice(0, index + 1);
-    setHistory([...newHistory, newState]);
-    setIndex(newHistory.length);
-  }, [history, index]);
+      const newHistory = prev.history.slice(0, prev.index + 1);
+      return {
+        history: [...newHistory, newState],
+        index: newHistory.length
+      };
+    });
+  }, []);
 
-  const undo = () => setIndex(i => Math.max(0, i - 1));
-  const redo = () => setIndex(i => Math.min(history.length - 1, i + 1));
+  const undo = useCallback(() => setState(prev => ({ ...prev, index: Math.max(0, prev.index - 1) })), []);
+  const redo = useCallback(() => setState(prev => ({ ...prev, index: Math.min(prev.history.length - 1, prev.index + 1) })), []);
 
   return {
-    design: history[index],
-    setDesign: setState,
+    design: state.history[state.index],
+    setDesign,
     undo,
     redo,
-    canUndo: index > 0,
-    canRedo: index < history.length - 1,
+    canUndo: state.index > 0,
+    canRedo: state.index < state.history.length - 1,
   };
 };
 
@@ -81,6 +87,13 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isArranging, setIsArranging] = useState(false);
   const [is3dViewOpen, setIs3dViewOpen] = useState(false);
+
+  const handleFurnitureChange = useCallback((id: string, newProps: Partial<Furniture>) => {
+    setDesign(prev => ({
+      ...prev,
+      furniture: prev.furniture.map(f => f.id === id ? { ...f, ...newProps } : f),
+    }));
+  }, [setDesign]);
 
   // Drag-and-drop state
   const dragRef = useRef<{ id: string; startX: number; startY: number; origX: number; origY: number } | null>(null);
@@ -101,7 +114,7 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
     const newX = Math.round(dragRef.current.origX + dx);
     const newY = Math.round(dragRef.current.origY + dy);
     handleFurnitureChange(dragRef.current.id, { x: newX, y: newY });
-  }, []);
+  }, [handleFurnitureChange]);
 
   const handlePointerUp = useCallback(() => {
     dragRef.current = null;
@@ -193,12 +206,6 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
   };
 
 
-  const handleFurnitureChange = (id: string, newProps: Partial<Furniture>) => {
-    setDesign(prev => ({
-      ...prev,
-      furniture: prev.furniture.map(f => f.id === id ? { ...f, ...newProps } : f),
-    }));
-  };
 
   const handleRoomChange = (newProps: Partial<Room>) => {
     setDesign(prev => ({
@@ -423,6 +430,7 @@ export function DesignEditor({ initialDesign }: { initialDesign: Design }) {
                     zIndex: item.type === 'Rug' ? 0 : 1,
                   }}
                   onPointerDown={(e) => handlePointerDown(e, item)}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <Icon className="w-2/3 h-2/3 text-white/60 pointer-events-none" style={{ filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.5))' }} />
                   <p className="text-xs text-center p-1 truncate text-white bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-0 w-full pointer-events-none">{item.name}</p>

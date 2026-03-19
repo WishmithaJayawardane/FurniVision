@@ -87,7 +87,9 @@ export default function LoginPage() {
         return;
       }
     } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
+      // Firebase Email Enumeration Protection masks 'auth/email-already-in-use' 
+      // with 'auth/invalid-credential' during sign up.
+      if (error.code === 'auth/email-already-in-use' || (action === 'signup' && error.code === 'auth/invalid-credential')) {
         toast({
           variant: 'destructive',
           title: 'Account Already Exists',
@@ -95,10 +97,16 @@ export default function LoginPage() {
         });
         return;
       }
+
+      let errorMessage = error.message;
+      if (action === 'login' && error.code === 'auth/invalid-credential') {
+        errorMessage = 'Invalid email or password. Please try again.';
+      }
+
       toast({
         variant: 'destructive',
         title: 'Authentication Failed',
-        description: error.message,
+        description: errorMessage,
       });
     } finally {
       setIsSigningIn(false);
