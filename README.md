@@ -13,7 +13,7 @@ If you are a lecturer or a group member starting this project fresh (after extra
 ### Step 1: Install Dependencies
 Open your terminal (Command Prompt, PowerShell, or Mac Terminal), navigate to the root folder of this project (`FurniVision`), and run the following command to download all necessary libraries:
 ```bash
-npm install
+npm.cmd install
 ```
 *(This may take a minute as it rebuilds the `node_modules` folder.)*
 
